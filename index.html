@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiHFSinger — Audio Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f6f8fa;
+      color: #24292f;
+      line-height: 1.6;
+    }
+
+    header {
+      background: #0d1117;
+      color: #e6edf3;
+      padding: 2.5rem 1rem 2rem;
+      text-align: center;
+    }
+    header h1 { font-size: 1.9rem; font-weight: 700; margin-bottom: 0.35rem; }
+    header .subtitle { font-size: 1rem; color: #8b949e; max-width: 700px; margin: 0 auto 0.8rem; }
+    header .badge {
+      display: inline-block;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.8rem;
+      color: #58a6ff;
+      margin: 0.2rem;
+      text-decoration: none;
+    }
+    header .badge:hover { border-color: #58a6ff; }
+
+    main { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #57606a;
+      margin: 2rem 0 0.8rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #d0d7de;
+    }
+
+    /* ---- table ---- */
+    .demo-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.88rem;
+    }
+    .demo-table thead tr { background: #f6f8fa; }
+    .demo-table th {
+      padding: 0.6rem 0.8rem;
+      text-align: center;
+      font-weight: 600;
+      border-bottom: 1px solid #d0d7de;
+      border-right: 1px solid #eaecef;
+      white-space: nowrap;
+    }
+    .demo-table th:first-child { text-align: left; }
+    .demo-table td {
+      padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid #eaecef;
+      border-right: 1px solid #eaecef;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .demo-table tr:last-child td { border-bottom: none; }
+    .demo-table td:first-child { text-align: left; white-space: nowrap; font-weight: 500; }
+    .demo-table tbody tr:hover { background: #f6f8fa; }
+    .demo-table th:last-child, .demo-table td:last-child { border-right: none; }
+
+    audio { height: 32px; width: 170px; }
+
+    .tag-ours {
+      display: inline-block;
+      background: #ddf4ff;
+      color: #0550ae;
+      border-radius: 12px;
+      padding: 0 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 0.3rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.8rem;
+      color: #8b949e;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>LiHFSinger</h1>
+  <p class="subtitle">
+    Lightweight High-Fidelity Singing Voice Synthesis<br>
+    via Latent Flow Matching and Dual-Branch Vocoder
+  </p>
+  <a class="badge" href="https://github.com/dukerki/LiHFsinger-demo">GitHub Repo</a>
+</header>
+
+<main>
+  <p style="margin-bottom:1rem;color:#57606a;font-size:0.92rem;">
+    Each row is one test utterance. Systems compared: <strong>GT</strong> (recording),
+    <strong>DiffSinger</strong> (full baseline), <strong>DiffSinger-Compact</strong> (reduced backbone),
+    <strong>Latent2Mel</strong> (latent → mel ablation), <strong>VISinger 2</strong> (SOTA reference),
+    and <strong>LiHFSinger</strong> (proposed).
+  </p>
+
+  <div class="section-title">Comparative Listening Test — 10 Utterances</div>
+
+  <table class="demo-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>GT</th>
+        <th>DiffSinger</th>
+        <th>DiffSinger-Compact</th>
+        <th>Latent2Mel</th>
+        <th>VISinger 2</th>
+        <th>LiHFSinger <span class="tag-ours">Ours</span></th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+    </tbody>
+  </table>
+</main>
+
+<footer>
+  Audio samples are synthesized at 44.1 kHz. &nbsp;|&nbsp;
+  Page auto-generated for demo purposes.
+</footer>
+
+<script>
+  const ids = [
+    "2044001628","2044001629","2044001630","2044001631","2044001632",
+    "2044001633","2044001634","2044001635","2044001636","2044001637"
+  ];
+
+  const models = [
+    { key: "GT",               label: "GT" },
+    { key: "diffsinger",       label: "DiffSinger" },
+    { key: "diffsinger-Compact", label: "DiffSinger-Compact" },
+    { key: "Latent2Mel",       label: "Latent2Mel" },
+    { key: "VI2opencpop",      label: "VISinger 2" },
+    { key: "LiHFsinger",       label: "LiHFSinger" },
+  ];
+
+  const tbody = document.getElementById("table-body");
+
+  ids.forEach((id, i) => {
+    const tr = document.createElement("tr");
+    // row number
+    const tdNum = document.createElement("td");
+    tdNum.textContent = i + 1;
+    tr.appendChild(tdNum);
+
+    models.forEach(m => {
+      const td = document.createElement("td");
+      const audio = document.createElement("audio");
+      audio.controls = true;
+      audio.src = `audio/${m.key}/${id}.wav`;
+      td.appendChild(audio);
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+</script>
+</body>
+</html>
