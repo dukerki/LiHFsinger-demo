@@ -86,6 +86,11 @@
       font-size: 0.8rem; font-weight: 600;
       color: #57606a;
       border-bottom: 1px solid #d0d7de;
+      display: flex; align-items: baseline; gap: 0.6rem;
+    }
+    .card-lyrics {
+      font-size: 0.88rem; font-weight: 500;
+      color: #24292f;
     }
     .card-body { padding: 0.5rem 0; }
     .system-row {
@@ -194,7 +199,7 @@ function makeTag(cls, text) {
 }
 
 /* ── Build cards ── */
-function buildCards(containerId, ids, models, pathFn) {
+function buildCards(containerId, ids, models, pathFn, lyricsMap) {
   const grid = document.getElementById(containerId);
   ids.forEach((id, i) => {
     const card = document.createElement('div');
@@ -202,7 +207,15 @@ function buildCards(containerId, ids, models, pathFn) {
 
     const hdr = document.createElement('div');
     hdr.className = 'card-header';
-    hdr.textContent = `Utterance ${i + 1}`;
+    const numSpan = document.createElement('span');
+    numSpan.textContent = `#${i + 1}`;
+    hdr.appendChild(numSpan);
+    if (lyricsMap && lyricsMap[id]) {
+      const lyricsSpan = document.createElement('span');
+      lyricsSpan.className = 'card-lyrics';
+      lyricsSpan.textContent = lyricsMap[id];
+      hdr.appendChild(lyricsSpan);
+    }
     card.appendChild(hdr);
 
     const body = document.createElement('div');
@@ -232,6 +245,18 @@ const sysIds = [
   "2044001628","2044001629","2044001630","2044001631","2044001632",
   "2044001633","2044001634","2044001635","2044001636","2044001637"
 ];
+const sysLyrics = {
+  "2044001628": "雨淋湿了天空灰得更讲究",
+  "2044001629": "你说你不懂为何在这时牵手",
+  "2044001630": "我晒干了沉默悔得更冲动",
+  "2044001631": "就算这是做错也只是怕错过",
+  "2044001632": "在一起叫梦分开了叫痛",
+  "2044001633": "是不是说没有做完的梦最痛",
+  "2044001634": "迷路的后果我能承受",
+  "2044001635": "这最后的出口在爱过了才有",
+  "2044001636": "能不能给我一首歌的时间",
+  "2044001637": "紧紧的把那拥抱变成永远",
+};
 const sysModels = [
   { key: "GT",               label: "GT",                  tag: ["tag-gt",    "GT"]    },
   { key: "diffsinger",       label: "DiffSinger",          tag: null },
@@ -241,7 +266,7 @@ const sysModels = [
   { key: "LiHFsinger",       label: "LiHFSinger",          tag: ["tag-ours",  "Ours"]  },
 ];
 buildCards("sys-grid", sysIds, sysModels,
-  (key, id) => `audio/${key}/${id}.wav`);
+  (key, id) => `audio/${key}/${id}.wav`, sysLyrics);
 
 /* ── Section 2: Vocoder Ablation ── */
 const vocIds = Array.from({length: 15}, (_, i) => String(i).padStart(4, '0'));
@@ -256,7 +281,7 @@ const vocModels = [
   { key: "full-mel-lihf",   label: "LiHF (full mel)",         tag: ["tag-ablat", "ablat"] },
 ];
 buildCards("voc-grid", vocIds, vocModels,
-  (key, id) => `audio/vocoder/${key}/${id}.wav`);
+  (key, id) => `audio/vocoder/${key}/${id}.wav`, null);
 </script>
 </body>
 </html>
