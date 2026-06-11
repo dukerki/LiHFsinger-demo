@@ -164,6 +164,7 @@
       Vocoder ablation on 15 utterances reconstructed from ground-truth mel/STFT features.
       <strong>GT</strong>: original recording &nbsp;·&nbsp;
       <strong>HiFi-GAN</strong> / <strong>Vocos</strong>: standard neural vocoders &nbsp;·&nbsp;
+      <strong>PC-NSF-HiFiGAN (same-data)</strong>: demo-only baseline trained on the same dataset as our system; not included in the paper because of its clearly inferior audio quality &nbsp;·&nbsp;
       <strong>LiHF</strong>: proposed dual-branch vocoder (latent input) &nbsp;·&nbsp;
       <strong>LiHF (no WORLD)</strong>: without WORLD-branch &nbsp;·&nbsp;
       <strong>LiHF (mel)</strong>: mel-input variant &nbsp;·&nbsp;
@@ -274,6 +275,7 @@ const vocModels = [
   { key: "gt",              label: "GT",                      tag: ["tag-gt",    "GT"]    },
   { key: "hifigan",         label: "HiFi-GAN",                tag: null },
   { key: "vocos",           label: "Vocos",                   tag: null },
+  { key: "pc-nsf-hifigan",  label: "PC-NSF-HiFiGAN (same-data demo)", tag: ["tag-ablat", "demo"] },
   { key: "lihf",            label: "LiHF (proposed)",         tag: ["tag-ours",  "Ours"]  },
   { key: "lihf-noworld",    label: "LiHF (no WORLD)",         tag: ["tag-ablat", "ablat"] },
   { key: "mel-lihf",        label: "LiHF (mel input)",        tag: ["tag-ablat", "ablat"] },
@@ -281,7 +283,9 @@ const vocModels = [
   { key: "full-mel-lihf",   label: "LiHF (full mel)",         tag: ["tag-ablat", "ablat"] },
 ];
 buildCards("voc-grid", vocIds, vocModels,
-  (key, id) => `audio/vocoder/${key}/${id}.wav`, null);
+  (key, id) => key === "pc-nsf-hifigan"
+    ? `audio/vocoder/${key}/${id}_pcnsf_hifigan.wav`
+    : `audio/vocoder/${key}/${id}.wav`, null);
 </script>
 </body>
 </html>
